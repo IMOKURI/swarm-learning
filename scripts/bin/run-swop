@@ -97,6 +97,8 @@ processComponentBatchOpt()
         --swop-uid) checkAndAssign "${opt}" "${optarg}"
             re='^[0-9]+$'
             [[ ! "${optarg}" =~ ${re} ]] && error "${opt}: ${optarg}: bad user id";;
+        --cgroupns) checkAndAssign "${opt}" "${optarg}"
+            ;;
         *) unprocessedOpts+=("${origParam}"); nShift=1;;
     esac
 
@@ -125,6 +127,8 @@ onTrainEnd()
     envvar+=(-e "SWOP_UID=${swopUid}")
     envvar+=(-e "SWOP_GID=${dockerGroupId}")
     envvar+=(-e "SWOP_PROFILE=${profileFileName}")
+
+    [[ -n "${cgroupns}" ]] && miscDockerRunParams+=(--cgroupns ${cgroupns})
 
     cmd+=("${unprocessedOpts[@]}")
     unprocessedOpts=()
